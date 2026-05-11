@@ -1,53 +1,181 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "House.kg listing extraction",
   "type": "object",
-  "required": ["feedTitle", "items"],
+  "description": "Rental apartment listings extracted from a classifieds page, enriched with details from each listing page.",
   "additionalProperties": false,
+  "required": [
+    "items"
+  ],
   "properties": {
-    "feedTitle": {
-      "type": "string",
-      "description": "Human-readable title for the search feed."
-    },
     "items": {
       "type": "array",
-      "description": "Listings from the first visible House.kg results page.",
+      "description": "Apartment rental listings found on the page.",
       "items": {
         "type": "object",
-        "required": ["id", "url", "title"],
+        "description": "A single rental apartment listing with list-page and detail-page data.",
         "additionalProperties": false,
+          "required": [
+            "title",
+            "monthlyPrice",
+            "postedDate",
+            "address",
+            "link"
+          ],
         "properties": {
-          "id": {
-            "type": "string",
-            "description": "House.kg details id when visible, otherwise a stable id from the details URL."
-          },
-          "url": {
-            "type": "string",
-            "description": "Absolute or relative listing details URL."
-          },
           "title": {
-            "type": "string"
+            "type": "string",
+            "description": "Listing title as shown on the classifieds page."
+          },
+          "monthlyPrice": {
+            "type": "string",
+            "description": "The stated monthly rental price, preserving currency and formatting from the page."
+          },
+          "postedDate": {
+            "type": "string",
+            "description": "The posting date as shown on the page."
           },
           "address": {
-            "type": "string"
+            "type": "string",
+            "description": "The stated apartment address or location text."
           },
-          "price": {
-            "type": "string"
+          "link": {
+            "type": "string",
+            "description": "Absolute URL to the full listing page."
           },
-          "priceAlt": {
-            "type": "string"
+          "images": {
+            "type": "array",
+            "description": "All apartment image URLs from the full listing page.",
+            "items": {
+              "type": "string"
+            }
           },
-          "description": {
-            "type": "string"
+          "fullDescription": {
+            "type": "string",
+            "description": "Full apartment description from the listing detail page."
           },
-          "photoUrl": {
-            "type": "string"
+          "offerType": {
+            "type": "string",
+            "description": "Type of offer stated on the detail page: agent or owner.",
+            "enum": [
+              "agent",
+              "owner"
+            ]
           },
-          "publishedText": {
-            "type": "string"
+          "contactPhone": {
+            "type": "string",
+            "description": "Stated contact phone number from the full listing page."
+          },
+          "detailStatus": {
+            "type": [
+              "number",
+              "null"
+            ],
+            "description": "HTTP status captured while loading the listing detail page."
+          },
+          "detailOk": {
+            "type": "boolean",
+            "description": "Whether the detail page was reachable."
+          },
+          "detailError": {
+            "type": "string",
+            "description": "Detail-page error code when the listing detail page could not be loaded."
           }
         }
       }
     }
+  },
+  "x-yoyj-workflow": {
+    "version": 1,
+    "steps": [
+      {
+        "type": "extract",
+        "outputPath": "$.items",
+        "schema": {
+          "type": "array",
+          "description": "List-page extraction of rental apartment cards before detail-page enrichment.",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "title",
+              "monthlyPrice",
+              "postedDate",
+              "address",
+              "link"
+            ],
+            "properties": {
+              "title": {
+                "type": "string",
+                "description": "Listing title from the list page."
+              },
+              "monthlyPrice": {
+                "type": "string",
+                "description": "Monthly rental price exactly as stated on the list page."
+              },
+              "postedDate": {
+                "type": "string",
+                "description": "Posting date exactly as stated on the list page."
+              },
+              "address": {
+                "type": "string",
+                "description": "Address or location exactly as stated on the list page."
+              },
+              "link": {
+                "type": "string",
+                "description": "Absolute URL to the listing detail page."
+              }
+            }
+          }
+        }
+      },
+      {
+        "type": "forEach",
+        "itemsPath": "$.items",
+        "steps": [
+          {
+            "type": "detail",
+            "urlPath": "$.link",
+            "routePattern": "https://www.house.kg/details/:id",
+            "missingDetailBehavior": "keepWithStatus",
+            "schema": {
+              "type": "object",
+              "description": "Detail-page enrichment merged into the corresponding listing item.",
+              "additionalProperties": false,
+              "required": [
+                "images",
+                "fullDescription",
+                "offerType",
+                "contactPhone"
+              ],
+              "properties": {
+                "images": {
+                  "type": "array",
+                  "description": "All image URLs from the full listing page.",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "fullDescription": {
+                  "type": "string",
+                  "description": "Full apartment description from the detail page."
+                },
+                "offerType": {
+                  "type": "string",
+                  "description": "Whether the offer is from an agent or owner.",
+                  "enum": [
+                    "agent",
+                    "owner"
+                  ]
+                },
+                "contactPhone": {
+                  "type": "string",
+                  "description": "Stated contact phone number from the detail page."
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
   }
 }

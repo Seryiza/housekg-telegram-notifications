@@ -3,7 +3,7 @@ import type { ExtractedListing, NormalizedListing } from "./types";
 const HOUSEKG_BASE_URL = "https://www.house.kg";
 
 export function normalizeExtractedListing(input: ExtractedListing): NormalizedListing | undefined {
-  const absoluteUrl = normalizeAbsoluteUrl(input.url);
+  const absoluteUrl = normalizeAbsoluteUrl(input.link);
   if (!absoluteUrl) {
     return undefined;
   }
@@ -11,17 +11,24 @@ export function normalizeExtractedListing(input: ExtractedListing): NormalizedLi
   const idFromUrl = getHouseKgDetailsId(absoluteUrl);
   const id = idFromUrl ?? absoluteUrl;
   const title = cleanString(input.title) ?? "House.kg listing";
+  const images = normalizeImageUrls(input.images);
 
   return {
     id,
-    url: absoluteUrl,
+    link: absoluteUrl,
     title,
     ...optionalField("address", input.address),
-    ...optionalField("price", input.price),
-    ...optionalField("priceAlt", input.priceAlt),
-    ...optionalField("description", input.description),
-    ...optionalField("photoUrl", normalizeAbsoluteUrl(input.photoUrl)),
-    ...optionalField("publishedText", input.publishedText),
+    ...optionalField("monthlyPrice", input.monthlyPrice),
+    ...optionalField("fullDescription", input.fullDescription),
+    ...(images.length > 0 ? { images } : {}),
+    ...optionalField("postedDate", input.postedDate),
+    ...optionalOfferType(input.offerType),
+    ...optionalField("contactPhone", input.contactPhone),
+    ...(typeof input.detailStatus === "number" || input.detailStatus === null
+      ? { detailStatus: input.detailStatus }
+      : {}),
+    ...(typeof input.detailOk === "boolean" ? { detailOk: input.detailOk } : {}),
+    ...optionalField("detailError", input.detailError),
   };
 }
 
@@ -71,4 +78,19 @@ function optionalField<Key extends keyof NormalizedListing>(
 ): Partial<Pick<NormalizedListing, Key>> {
   const cleaned = cleanString(value);
   return cleaned ? { [key]: cleaned } as Partial<Pick<NormalizedListing, Key>> : {};
+}
+
+function normalizeImageUrls(images: string[] | undefined): string[] {
+  const urls = new Set<string>();
+  for (const value of images ?? []) {
+    const normalized = normalizeAbsoluteUrl(value);
+    if (normalized) {
+      urls.add(normalized);
+    }
+  }
+  return [...urls];
+}
+
+function optionalOfferType(value: ExtractedListing["offerType"]): Pick<NormalizedListing, "offerType"> | {} {
+  return value === "agent" || value === "owner" ? { offerType: value } : {};
 }

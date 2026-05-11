@@ -12,11 +12,14 @@ export function formatListingMessage(feedTitle: string, listing: NormalizedListi
   const lines = [
     feedTitle,
     listing.title,
-    joinDefined([listing.price, listing.priceAlt], " / "),
+    listing.monthlyPrice,
     listing.address,
-    listing.publishedText,
-    snippet(listing.description, 450),
-    listing.url,
+    listing.postedDate,
+    formatDetailStatus(listing),
+    formatOfferType(listing.offerType),
+    listing.contactPhone ? `Phone: ${listing.contactPhone}` : undefined,
+    snippet(listing.fullDescription, 700),
+    listing.link,
   ].filter((line): line is string => Boolean(line));
 
   return lines.join("\n");
@@ -30,11 +33,24 @@ export async function sendTelegramNotification(
 ): Promise<void> {
   const text = formatListingMessage(feedTitle, listing);
   const target = parseTelegramTarget(chatIdWithOptionalTopic);
+  const images = getListingImages(listing);
 
-  if (listing.photoUrl) {
+  if (images.length > 1) {
+    await sendTelegramRequest(token, "sendMediaGroup", {
+      ...telegramTargetPayload(target),
+      media: images.slice(0, 10).map((url, index) => ({
+        type: "photo",
+        media: url,
+        ...(index === 0 ? { caption: truncate(text, PHOTO_CAPTION_LIMIT) } : {}),
+      })),
+    });
+    return;
+  }
+
+  if (images[0]) {
     await sendTelegramRequest(token, "sendPhoto", {
       ...telegramTargetPayload(target),
-      photo: listing.photoUrl,
+      photo: images[0],
       caption: truncate(text, PHOTO_CAPTION_LIMIT),
     });
     return;
@@ -88,7 +104,7 @@ function telegramTargetPayload(target: TelegramTarget): Record<string, string | 
 
 async function sendTelegramRequest(
   token: string,
-  method: "sendMessage" | "sendPhoto",
+  method: "sendMessage" | "sendPhoto" | "sendMediaGroup",
   payload: Record<string, unknown>,
 ): Promise<void> {
   const response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
@@ -106,6 +122,38 @@ async function sendTelegramRequest(
 function joinDefined(values: Array<string | undefined>, separator: string): string | undefined {
   const filtered = values.filter((value): value is string => Boolean(value));
   return filtered.length > 0 ? filtered.join(separator) : undefined;
+}
+
+function getListingImages(listing: NormalizedListing): string[] {
+  const urls = new Set<string>();
+  for (const url of listing.images ?? []) {
+    if (url) {
+      urls.add(url);
+    }
+  }
+  return [...urls];
+}
+
+function formatOfferType(value: NormalizedListing["offerType"]): string | undefined {
+  if (value === "owner") {
+    return "Owner";
+  }
+  if (value === "agent") {
+    return "Agent";
+  }
+  return undefined;
+}
+
+function formatDetailStatus(listing: NormalizedListing): string | undefined {
+  if (listing.detailOk !== false) {
+    return undefined;
+  }
+
+  const status = listing.detailStatus === null || listing.detailStatus === undefined
+    ? undefined
+    : `HTTP ${listing.detailStatus}`;
+  const reason = joinDefined([status, listing.detailError], ", ");
+  return reason ? `Details unavailable: ${reason}` : "Details unavailable";
 }
 
 function snippet(value: string | undefined, limit: number): string | undefined {

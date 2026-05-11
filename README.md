@@ -4,7 +4,7 @@
 
 # house.kg telegram notifications
 
-Bun + TypeScript watcher for [house.kg](https://www.house.kg) search result pages. It extracts the first page of each configured feed, stores seen listings in SQLite, and sends Telegram notifications once per unique listing per feed.
+Bun + TypeScript watcher for [house.kg](https://www.house.kg) search result pages. It extracts configured feeds with `yo-url-yo-json`, enriches listings from their detail pages, stores seen listings in SQLite, and sends Telegram notifications once per unique listing per feed.
 
 Real world usage of [yo-url-yo-json](https://github.com/Seryiza/yo-url-yo-json) repository.
 

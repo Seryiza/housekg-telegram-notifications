@@ -78,7 +78,7 @@ export class Store {
           title = excluded.title,
           last_seen_at = excluded.last_seen_at
       `)
-      .run(listing.id, feedId, listing.url, listing.title, now, now);
+      .run(listing.id, feedId, listing.link, listing.title, now, now);
 
     const row = this.db
       .query<ListingRow, [string, string]>(`
@@ -123,7 +123,7 @@ export class Store {
     return {
       id: row.id,
       feedId: row.feed_id,
-      url: row.url,
+      link: row.url,
       title: row.title,
       firstSeenAt: row.first_seen_at,
       lastSeenAt: row.last_seen_at,

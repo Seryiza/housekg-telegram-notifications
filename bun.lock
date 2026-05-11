@@ -7,7 +7,7 @@
       "devDependencies": {
         "@types/bun": "latest",
         "typescript": "latest",
-        "yo-url-yo-json": "0.1.1",
+        "yo-url-yo-json": "0.2.0",
       },
     },
   },
@@ -130,7 +130,7 @@
 
     "undici-types": ["undici-types@7.19.2", "", {}, "sha512-qYVnV5OEm2AW8cJMCpdV20CDyaN3g0AjDlOGf1OW4iaDEx8MwdtChUp4zu4H0VP3nDRF/8RKWH+IPp9uW0YGZg=="],
 
-    "yo-url-yo-json": ["yo-url-yo-json@0.1.1", "", { "dependencies": { "@openai/codex": "0.130.0", "ai": "^6.0.0", "ai-sdk-provider-codex-cli": "^1.0.0", "commander": "^14.0.2", "llm-scraper": "^2.0.0", "playwright-core": "1.55.0", "tsx": "^4.21.0", "zod": "^4.1.12" }, "bin": { "yo-url-yo-json": "dist/yo-url-yo-json.js" } }, "sha512-E82EEud7Ody8XrzbiLMTc1DcGu/bPS3Z7eeGZ9w8QxwnD9LIDVkZP27zpSjIiCl2UMc8O6/u1JbA04meLeBr4A=="],
+    "yo-url-yo-json": ["yo-url-yo-json@0.2.0", "", { "dependencies": { "@openai/codex": "0.130.0", "ai": "^6.0.0", "ai-sdk-provider-codex-cli": "^1.0.0", "commander": "^14.0.2", "llm-scraper": "^2.0.0", "playwright-core": "1.55.0", "tsx": "^4.21.0", "zod": "^4.1.12" }, "bin": { "yo-url-yo-json": "dist/yo-url-yo-json.js" } }, "sha512-MtnqQ+DaQ7Jooqfyn+G+okL/KMyf2G8YGB9Dkpp0UBxocF619E6WnRIBHt4r/YtiekBxRRw0QA4HJsXJo+KqSQ=="],
 
     "zod": ["zod@4.4.3", "", {}, "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="],
 

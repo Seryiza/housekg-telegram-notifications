@@ -15,14 +15,18 @@ export interface RuntimeConfig {
 
 export interface ExtractedListing {
   id?: string;
-  url?: string;
+  link?: string;
   title?: string;
   address?: string;
-  price?: string;
-  priceAlt?: string;
-  description?: string;
-  photoUrl?: string;
-  publishedText?: string;
+  monthlyPrice?: string;
+  fullDescription?: string;
+  images?: string[];
+  postedDate?: string;
+  offerType?: "agent" | "owner";
+  contactPhone?: string;
+  detailStatus?: number | null;
+  detailOk?: boolean;
+  detailError?: string;
 }
 
 export interface ExtractedFeed {
@@ -32,14 +36,18 @@ export interface ExtractedFeed {
 
 export interface NormalizedListing {
   id: string;
-  url: string;
+  link: string;
   title: string;
   address?: string;
-  price?: string;
-  priceAlt?: string;
-  description?: string;
-  photoUrl?: string;
-  publishedText?: string;
+  monthlyPrice?: string;
+  fullDescription?: string;
+  images?: string[];
+  postedDate?: string;
+  offerType?: "agent" | "owner";
+  contactPhone?: string;
+  detailStatus?: number | null;
+  detailOk?: boolean;
+  detailError?: string;
 }
 
 export interface StoredListing extends NormalizedListing {

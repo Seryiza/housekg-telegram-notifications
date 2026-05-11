@@ -44,7 +44,7 @@ export async function runExtractor(
     throw new Error(`Extractor exited with code ${exitCode}: ${stderr.trim() || stdout.trim()}`);
   }
 
-  return parseExtractorOutput(stdout);
+  return parseExtractorOutput(stdout, feed.title);
 }
 
 function resolveExtractorBinary(option: string | undefined): string {
@@ -60,15 +60,15 @@ function resolveExtractorBinary(option: string | undefined): string {
   return existsSync(localBinary) ? localBinary : "yo-url-yo-json";
 }
 
-export function parseExtractorOutput(stdout: string): ExtractedFeed {
+export function parseExtractorOutput(stdout: string, fallbackFeedTitle = "House.kg feed"): ExtractedFeed {
   const parsed = parseJson(stdout);
 
-  if (!isRecord(parsed) || typeof parsed.feedTitle !== "string" || !Array.isArray(parsed.items)) {
-    throw new Error("Extractor output must include feedTitle and items[]");
+  if (!isRecord(parsed) || !Array.isArray(parsed.items)) {
+    throw new Error("Extractor output must include items[]");
   }
 
   return {
-    feedTitle: parsed.feedTitle,
+    feedTitle: stringValue(parsed.feedTitle) ?? fallbackFeedTitle,
     items: parsed.items.map((item, index) => {
       if (!isRecord(item)) {
         throw new Error(`Extractor item at index ${index} must be an object`);
@@ -81,23 +81,45 @@ export function parseExtractorOutput(stdout: string): ExtractedFeed {
 
 function extractedListingFromRecord(item: Record<string, unknown>): ExtractedListing {
   const listing: ExtractedListing = {};
-  for (const field of [
-    "id",
-    "url",
-    "title",
-    "address",
-    "price",
-    "priceAlt",
-    "description",
-    "photoUrl",
-    "publishedText",
-  ] as const) {
-    const value = stringValue(item[field]);
-    if (value !== undefined) {
-      listing[field] = value;
-    }
+  assignString(listing, "id", item.id);
+  assignString(listing, "link", item.link);
+  assignString(listing, "title", item.title);
+  assignString(listing, "address", item.address);
+  assignString(listing, "monthlyPrice", item.monthlyPrice);
+  assignString(listing, "fullDescription", item.fullDescription);
+  assignString(listing, "postedDate", item.postedDate);
+  assignString(listing, "contactPhone", item.contactPhone);
+  assignString(listing, "detailError", item.detailError);
+
+  const images = stringArrayValue(item.images);
+  if (images) {
+    listing.images = images;
   }
+
+  if (item.offerType === "agent" || item.offerType === "owner") {
+    listing.offerType = item.offerType;
+  }
+
+  if (typeof item.detailStatus === "number" || item.detailStatus === null) {
+    listing.detailStatus = item.detailStatus;
+  }
+
+  if (typeof item.detailOk === "boolean") {
+    listing.detailOk = item.detailOk;
+  }
+
   return listing;
+}
+
+function assignString<Key extends keyof ExtractedListing>(
+  listing: ExtractedListing,
+  field: Key,
+  value: unknown,
+): void {
+  const string = stringValue(value);
+  if (string !== undefined) {
+    (listing[field] as string | undefined) = string;
+  }
 }
 
 function parseJson(stdout: string): unknown {
@@ -116,6 +138,15 @@ function parseJson(stdout: string): unknown {
 
 function stringValue(value: unknown): string | undefined {
   return typeof value === "string" ? value : undefined;
+}
+
+function stringArrayValue(value: unknown): string[] | undefined {
+  if (!Array.isArray(value)) {
+    return undefined;
+  }
+
+  const values = value.filter((item): item is string => typeof item === "string");
+  return values.length > 0 ? values : undefined;
 }
 
 function isRecord(input: unknown): input is Record<string, unknown> {

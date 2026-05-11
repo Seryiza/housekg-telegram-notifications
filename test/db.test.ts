@@ -25,7 +25,7 @@ describe("SQLite listing duplicates", () => {
 
     const listing = {
       id: "123",
-      url: "https://www.house.kg/details/123",
+      link: "https://www.house.kg/details/123",
       title: "2-room apartment",
     };
 
