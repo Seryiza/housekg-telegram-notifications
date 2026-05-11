@@ -1,0 +1,18 @@
+{
+  "name": "housekg-telegram-notifications",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "bun test",
+    "extract:sample": "bun run src/extract-sample.ts"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "latest",
+    "yo-url-yo-json": "0.1.1"
+  }
+}

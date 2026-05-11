@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "House.kg listing extraction",
+  "type": "object",
+  "required": ["feedTitle", "items"],
+  "additionalProperties": false,
+  "properties": {
+    "feedTitle": {
+      "type": "string",
+      "description": "Human-readable title for the search feed."
+    },
+    "items": {
+      "type": "array",
+      "description": "Listings from the first visible House.kg results page.",
+      "items": {
+        "type": "object",
+        "required": ["id", "url", "title"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "House.kg details id when visible, otherwise a stable id from the details URL."
+          },
+          "url": {
+            "type": "string",
+            "description": "Absolute or relative listing details URL."
+          },
+          "title": {
+            "type": "string"
+          },
+          "address": {
+            "type": "string"
+          },
+          "price": {
+            "type": "string"
+          },
+          "priceAlt": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "photoUrl": {
+            "type": "string"
+          },
+          "publishedText": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

@@ -8,6 +8,15 @@ lerna-debug.log*
 
 # database
 *.sqlite
+*.sqlite-shm
+*.sqlite-wal
+data/
+
+# extractor cache
+.yo-url-yo-json/
+
+# feeds config
+feeds.config.json
 
 # package-json
 package-json.lock

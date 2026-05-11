@@ -1,0 +1,10 @@
+{
+  "feeds": [
+    {
+      "id": "bishkek-apartments",
+      "title": "Bishkek apartments",
+      "url": "https://www.house.kg/kupit-kvartiru",
+      "enabled": false
+    }
+  ]
+}
