@@ -1,52 +1,60 @@
-# House.kg Telegram Notifications
+<p align="right">
+  <img width="250" height="250" alt="housekg-yoyo" src="https://github.com/user-attachments/assets/6c7f58bc-2916-4a14-b9d2-e33f61da438a" />
+</p>
 
-Bun + TypeScript watcher for House.kg search result pages. It extracts the first page of each configured feed with `yo-url-yo-json`, stores seen listings in SQLite, and sends Telegram notifications once per unique listing per feed.
+# house.kg telegram notifications
+
+Bun + TypeScript watcher for [house.kg](https://www.house.kg) search result pages. It extracts the first page of each configured feed, stores seen listings in SQLite, and sends Telegram notifications once per unique listing per feed.
+
+Real world usage of [yo-url-yo-json](https://github.com/Seryiza/yo-url-yo-json) repository.
+
+## How it looks
+
+1. **Start**
+
+```bash
+$ bun run src/index.ts
+Loaded 1 feed(s) from ./feeds.config.json
+Polling every 300000 ms
+Scanning 1 enabled feed(s)
+Feed "Асанбай" scan succeeded: 10 listing(s), 10 new notification(s)
+```
+
+2. **Handle extracted JSON**
+
+```json
+{
+  "feedTitle": "Аренда квартир в Кыргызстане",
+  "items": [
+    {
+      "id": "592972...",
+      "url": "https://www.house.kg/details/592972...",
+      "title": "1-комн. кв., 44 м2",
+      "address": "Бишкек, Магистраль, Сухэ Батора",
+      "price": "$ 700/мес.",
+      "priceAlt": "61 278 сом/мес.",
+      "description": "Сдаю квартиру на длительный срок! Однокомнатная элитка ...",
+      "photoUrl": "https://cdn.house.kg/house/images/4/d/3/4d338eb69ea12a.jpg",
+      "publishedText": "15 часов назад"
+    }
+  ]
+}
+```
+
+3. **Receive notifications**
+
+<img width="300" height="457" alt="yoyo-screenshot" src="https://github.com/user-attachments/assets/0e4c00d7-4dc4-4985-b507-e5de78c68046" />
 
 ## Setup
-
-1. Install dependencies:
-
-   ```sh
-   bun install
-   ```
-
-2. Copy the sample env:
-
-   ```sh
-   cp .env.example .env
-   ```
-
-3. Edit `.env`:
-
-   ```sh
-   TELEGRAM_BOT_TOKEN=123456:...
-   TELEGRAM_CHAT_ID=123456789
-   ```
-
-4. Edit `feeds.config.json` and add House.kg search URLs. See `feeds.config.example.json` for the expected shape.
-
-## Commands
-
 ```sh
+$ bun install
+   
+# Copy and edit the sample env
+$ cp .env.example .env
+
+# Copy and edit the feeds config
+$ cp feeds.config.example.json feeds.config.json
+
+# Start
 bun run start
-bun run typecheck
-bun test
-bun run extract:sample
 ```
-
-`bun run extract:sample` uses the first enabled feed from `feeds.config.json`, or accepts a URL:
-
-```sh
-bun run extract:sample "https://www.house.kg/kupit-kvartiru?..."
-```
-
-## Environment
-
-- `TELEGRAM_BOT_TOKEN`: Telegram bot token.
-- `TELEGRAM_CHAT_ID`: Telegram chat id to notify. To target a forum topic, use `chat_id:topic_id`, for example `-1001234567890:42`.
-- `DATABASE_PATH`: SQLite database path, default `./data/housekg.sqlite`.
-- `POLL_INTERVAL_MS`: scan interval, default `300000`.
-- `FEEDS_CONFIG_PATH`: feed config path, default `./feeds.config.json`.
-- `YO_URL_YO_JSON_BIN`: extractor binary name/path, default `yo-url-yo-json`.
-
-On first run, every currently extracted listing is treated as new and will be notified. Later scans update existing listings without duplicate notifications.
