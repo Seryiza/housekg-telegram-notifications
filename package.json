@@ -12,7 +12,6 @@
   "dependencies": {},
   "devDependencies": {
     "@types/bun": "latest",
-    "typescript": "latest",
-    "yo-url-yo-json": "0.2.0"
+    "typescript": "latest"
   }
 }

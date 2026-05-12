@@ -47,6 +47,8 @@ Feed "Асанбай" scan succeeded: 10 listing(s), 10 new notification(s)
 
 ## Setup
 ```sh
+# Provides Bun, yo-url-yo-json, and CloakBrowser.
+$ nix develop
 $ bun install
    
 # Copy and edit the sample env

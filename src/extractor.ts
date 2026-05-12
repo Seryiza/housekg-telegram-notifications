@@ -1,5 +1,3 @@
-import { existsSync } from "node:fs";
-import { join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { normalizeExtractedListing } from "./listing";
 import type { ExtractedFeed, ExtractedListing, FeedConfig, NormalizedListing } from "./types";
@@ -56,8 +54,7 @@ function resolveExtractorBinary(option: string | undefined): string {
     return process.env.YO_URL_YO_JSON_BIN.trim();
   }
 
-  const localBinary = join(process.cwd(), "node_modules", ".bin", "yo-url-yo-json");
-  return existsSync(localBinary) ? localBinary : "yo-url-yo-json";
+  return "yo-url-yo-json";
 }
 
 export function parseExtractorOutput(stdout: string, fallbackFeedTitle = "House.kg feed"): ExtractedFeed {
