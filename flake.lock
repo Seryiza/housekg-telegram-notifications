@@ -137,11 +137,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1778559844,
-        "narHash": "sha256-yuwR+6DHVwjjchjLjCqxDTnsVBMjC/i+dAsUGSZ+Ifw=",
+        "lastModified": 1778561671,
+        "narHash": "sha256-BzSOhqTaiw9V0EzcxrYAbBnd+6aC1xLZRI9WJFE/YqE=",
         "owner": "Seryiza",
         "repo": "yo-url-yo-json",
-        "rev": "b58fbcd46c514e62d2c3450bad7e1b1f830a1c18",
+        "rev": "8d8a22fd4f2969d13280dc721aaa9a74e029aff1",
         "type": "github"
       },
       "original": {
