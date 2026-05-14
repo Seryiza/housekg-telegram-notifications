@@ -2,6 +2,7 @@ import type { NormalizedListing } from "./types";
 
 const MESSAGE_LIMIT = 4096;
 const PHOTO_CAPTION_LIMIT = 1024;
+const FALLBACK_RATE_LIMIT_DELAY_MS = 5_000;
 
 interface TelegramTarget {
   chatId: string;
@@ -107,16 +108,56 @@ async function sendTelegramRequest(
   method: "sendMessage" | "sendPhoto" | "sendMediaGroup",
   payload: Record<string, unknown>,
 ): Promise<void> {
-  const response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(payload),
-  });
+  while (true) {
+    const response = await fetch(`https://api.telegram.org/bot${token}/${method}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-  if (!response.ok) {
+    if (response.ok) {
+      return;
+    }
+
     const body = await response.text();
+    if (response.status === 429) {
+      const delayMs = parseRetryAfterDelayMs(body) ?? FALLBACK_RATE_LIMIT_DELAY_MS;
+      console.warn(`Telegram ${method} rate limited; retrying after ${delayMs} ms`);
+      await delay(delayMs);
+      continue;
+    }
+
     throw new Error(`Telegram ${method} failed with ${response.status}: ${body}`);
   }
+}
+
+function parseRetryAfterDelayMs(body: string): number | undefined {
+  const parsed = parseJsonObject(body);
+  const parameters = parsed && isRecord(parsed.parameters) ? parsed.parameters : undefined;
+  const retryAfter = parameters?.retry_after;
+
+  if (typeof retryAfter !== "number" || !Number.isFinite(retryAfter) || retryAfter <= 0) {
+    return undefined;
+  }
+
+  return retryAfter * 1_000;
+}
+
+function parseJsonObject(body: string): Record<string, unknown> | undefined {
+  try {
+    const parsed: unknown = JSON.parse(body);
+    return isRecord(parsed) ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function isRecord(input: unknown): input is Record<string, unknown> {
+  return typeof input === "object" && input !== null && !Array.isArray(input);
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function joinDefined(values: Array<string | undefined>, separator: string): string | undefined {
