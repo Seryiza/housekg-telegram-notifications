@@ -24,23 +24,23 @@
         "type": "github"
       }
     },
-    "cloakbrowser": {
+    "camoufox": {
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1778562864,
-        "narHash": "sha256-t1sLjNpCUYpKFfg/8GBs6etMY2Xe4zSsaoLEnC000ck=",
+        "lastModified": 1778724573,
+        "narHash": "sha256-r1Z9q1NG443KDqSxpYRzWph7Ef/JEdDGVSXtGuBveew=",
         "owner": "Seryiza",
-        "repo": "CloakBrowser",
-        "rev": "9638cbf2aa988957e2720a4a6571bab8b68d6660",
+        "repo": "camoufox",
+        "rev": "4d342ae28c4634b5cb0be797c11366810889dacb",
         "type": "github"
       },
       "original": {
         "owner": "Seryiza",
-        "repo": "CloakBrowser",
+        "repo": "camoufox",
         "type": "github"
       }
     },
@@ -84,7 +84,7 @@
     },
     "root": {
       "inputs": {
-        "cloakbrowser": "cloakbrowser",
+        "camoufox": "camoufox",
         "nixpkgs": "nixpkgs",
         "yo-url-yo-json": "yo-url-yo-json"
       }
@@ -129,19 +129,19 @@
     "yo-url-yo-json": {
       "inputs": {
         "bun2nix": "bun2nix",
-        "cloakbrowser": [
-          "cloakbrowser"
+        "camoufox": [
+          "camoufox"
         ],
         "nixpkgs": [
           "nixpkgs"
         ]
       },
       "locked": {
-        "lastModified": 1778562901,
-        "narHash": "sha256-7aFzzTntzz+uIyR5N6XB6Bh5cngcd6Uwmgw6nUQ5oB8=",
+        "lastModified": 1778731779,
+        "narHash": "sha256-tWB0pFXDQ4QVGBObNVVEpFGR6levBwaC/3+z5rr43OE=",
         "owner": "Seryiza",
         "repo": "yo-url-yo-json",
-        "rev": "1c14b1285558cb364ceb617dbddbee36261d5a07",
+        "rev": "d7a9b2a4721fffe8d8855c62839f3c0b2c0fff01",
         "type": "github"
       },
       "original": {

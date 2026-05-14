@@ -47,7 +47,7 @@ Feed "Асанбай" scan succeeded: 10 listing(s), 10 new notification(s)
 
 ## Setup
 ```sh
-# Provides Bun, yo-url-yo-json, and CloakBrowser.
+# Provides Bun, yo-url-yo-json, and Camoufox.
 $ nix develop
 $ bun install
    
